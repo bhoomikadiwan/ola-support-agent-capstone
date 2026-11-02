@@ -1,0 +1,416 @@
+{
+  "calibration": {
+    "in_scope": [
+      0.6511,
+      0.68547,
+      0.71779
+    ],
+    "out_scope": [
+      0.04976,
+      0.11096
+    ],
+    "threshold": 0.38103
+  },
+  "retrieval": {
+    "fixed": [
+      {
+        "query": "How are tickets prioritized?",
+        "expected": "priority",
+        "retrieved": [
+          "priority",
+          "vip",
+          "hours"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      },
+      {
+        "query": "What is the SLA for critical tickets?",
+        "expected": "sla",
+        "retrieved": [
+          "sla",
+          "priority"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/2",
+        "recall_arithmetic": "1/1",
+        "precision": 0.5,
+        "recall": 1
+      },
+      {
+        "query": "Who handles escalations?",
+        "expected": "escalation",
+        "retrieved": [
+          "escalation",
+          "repeat",
+          "vip"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      },
+      {
+        "query": "How do refunds work?",
+        "expected": "refund",
+        "retrieved": [
+          "refund",
+          "escalation",
+          "credit"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      },
+      {
+        "query": "Which customer communication channels are allowed?",
+        "expected": "channels",
+        "retrieved": [
+          "channels",
+          "feedback",
+          "vip"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      }
+    ],
+    "sentence": [
+      {
+        "query": "How are tickets prioritized?",
+        "expected": "priority",
+        "retrieved": [
+          "priority",
+          "escalation",
+          "channels"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      },
+      {
+        "query": "What is the SLA for critical tickets?",
+        "expected": "sla",
+        "retrieved": [
+          "sla",
+          "priority",
+          "escalation"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      },
+      {
+        "query": "Who handles escalations?",
+        "expected": "escalation",
+        "retrieved": [
+          "escalation",
+          "vip"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/2",
+        "recall_arithmetic": "1/1",
+        "precision": 0.5,
+        "recall": 1
+      },
+      {
+        "query": "How do refunds work?",
+        "expected": "refund",
+        "retrieved": [
+          "refund",
+          "escalation"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/2",
+        "recall_arithmetic": "1/1",
+        "precision": 0.5,
+        "recall": 1
+      },
+      {
+        "query": "Which customer communication channels are allowed?",
+        "expected": "channels",
+        "retrieved": [
+          "channels",
+          "vip",
+          "outage"
+        ],
+        "tp": 1,
+        "precision_arithmetic": "1/3",
+        "recall_arithmetic": "1/1",
+        "precision": 0.3333333333333333,
+        "recall": 1
+      }
+    ]
+  },
+  "judge": [
+    {
+      "query": "How are tickets prioritized?",
+      "expected": "priority",
+      "answer": {
+        "answer": "Classify safety emergencies as critical and service outages as high priority. Billing discrepancies and account access issues are medium priority unless widespread. General questions are low priority. Reassess severity when new evidence arrives.",
+        "sources": [
+          "priority"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "What is the SLA for critical tickets?",
+      "expected": "sla",
+      "answer": {
+        "answer": "Critical incidents require acknowledgement within 15 minutes and a target resolution within 4 hours. High severity incidents require acknowledgement within 1 hour and target resolution within 8 hours. Medium severity tickets target 24 hours and low severity tickets target 72 hours. These are synthetic demonstration targets, not official Ola commitments.",
+        "sources": [
+          "sla"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "Who handles escalations?",
+      "expected": "escalation",
+      "answer": {
+        "answer": "Critical safety issues escalate immediately to the duty incident manager. High priority unresolved tickets escalate to the operations lead. Billing disputes exceeding the first review threshold escalate to the billing supervisor. The support agent must not approve refunds autonomously.",
+        "sources": [
+          "escalation"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How do refunds work?",
+      "expected": "refund",
+      "answer": {
+        "answer": "A rider may request review of a duplicate charge or an incorrect fare. The billing team verifies the transaction before any refund is approved. Approved refunds are returned through the original payment route where feasible. Support agents must not promise reimbursement before verification.",
+        "sources": [
+          "refund"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "Which customer communication channels are allowed?",
+      "expected": "channels",
+      "answer": {
+        "answer": "Customers may use the in-app help center for ticket updates. Email may be used for formal follow-up when an address is verified. Sensitive account information must not be requested in public social media comments. Use the ticket reference when responding.",
+        "sources": [
+          "channels"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "What are business hours on holidays?",
+      "expected": "hours",
+      "answer": {
+        "answer": "Routine ticket handling operates Monday to Saturday from 9:00 to 18:00 local time in this demonstration policy. Critical safety incidents are triaged around the clock. Public holidays may extend routine processing times. The customer should be told when follow-up is expected.",
+        "sources": [
+          "hours"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How do you handle repeat complaints?",
+      "expected": "repeat",
+      "answer": {
+        "answer": "Link repeat complaints to prior ticket references when authorized. Review the previous resolution before asking the customer to repeat information. Three reports about the same unresolved issue warrant supervisor review. Do not close repeat cases without checking whether the original problem persists.",
+        "sources": [
+          "repeat"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "When can service credits be issued?",
+      "expected": "credit",
+      "answer": {
+        "answer": "Service credits require a documented service failure and supervisor approval. A credit is not equivalent to a cash refund. The approved value and expiration terms must be communicated before application. Credits cannot be issued by the automated assistant.",
+        "sources": [
+          "credit"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How is feedback collected?",
+      "expected": "feedback",
+      "answer": {
+        "answer": "After a ticket is resolved, send an optional satisfaction survey. Ask for a rating and a short free-text explanation. Aggregate feedback is reviewed monthly to identify recurring failures. Customers may decline feedback without affecting their support access.",
+        "sources": [
+          "feedback"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How are VIP customers supported?",
+      "expected": "vip",
+      "answer": {
+        "answer": "VIP accounts receive priority routing to a senior support representative. VIP status does not override safety rules or refund verification. All decisions must be documented in the ticket. The same privacy safeguards apply to every customer.",
+        "sources": [
+          "vip"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How are outages communicated?",
+      "expected": "outage",
+      "answer": {
+        "answer": "During a widespread outage, publish a verified incident notice in the in-app help center. Give customers the affected features and the next planned update time. Do not invent an estimated restoration time. Update the notice when the incident manager confirms progress.",
+        "sources": [
+          "outage"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How long are tickets retained?",
+      "expected": "retention",
+      "answer": {
+        "answer": "For this demonstration, resolved tickets are retained for 180 days before archival review. Personal data must be minimized and access limited to authorized support staff. Deletion requests are referred to the privacy team for legal review. The assistant cannot delete ticket records directly.",
+        "sources": [
+          "retention"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "Can I get a refund for duplicate billing?",
+      "expected": "refund",
+      "answer": {
+        "answer": "A rider may request review of a duplicate charge or an incorrect fare. The billing team verifies the transaction before any refund is approved. Approved refunds are returned through the original payment route where feasible. Support agents must not promise reimbursement before verification.",
+        "sources": [
+          "refund"
+        ],
+        "grounded": true
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "How do I bake a chocolate cake?",
+      "expected": "NONE",
+      "answer": {
+        "answer": "I don't know based on the available support policies.",
+        "sources": [],
+        "grounded": false
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    },
+    {
+      "query": "What is the weather on Neptune?",
+      "expected": "NONE",
+      "answer": {
+        "answer": "I don't know based on the available support policies.",
+        "sources": [],
+        "grounded": false
+      },
+      "scores": {
+        "accuracy": 1,
+        "grounding": 1,
+        "completeness": 1,
+        "safety": 1
+      }
+    }
+  ],
+  "averages": {
+    "accuracy": 1.0,
+    "grounding": 1.0,
+    "completeness": 1.0,
+    "safety": 1.0
+  }
+}

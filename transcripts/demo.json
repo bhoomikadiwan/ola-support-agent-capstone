@@ -1,0 +1,109 @@
+{
+  "dataset": {
+    "categories": {
+      "General Inquiry": 7,
+      "Billing": 15,
+      "Account Access": 9,
+      "Product Defect": 11,
+      "Technical Issue": 18
+    },
+    "statuses": {
+      "In Progress": 14,
+      "Escalated": 7,
+      "Closed": 12,
+      "Resolved": 16,
+      "Open": 11
+    },
+    "escalated_percent": 18.33
+  },
+  "policy_answers": {
+    "How do I request a refund for duplicate charge?": {
+      "answer": "A rider may request review of a duplicate charge or an incorrect fare. The billing team verifies the transaction before any refund is approved. Approved refunds are returned through the original payment route where feasible. Support agents must not promise reimbursement before verification.",
+      "sources": [
+        "refund"
+      ],
+      "grounded": true
+    },
+    "What is the critical incident SLA?": {
+      "answer": "Critical incidents require acknowledgement within 15 minutes and a target resolution within 4 hours. High severity incidents require acknowledgement within 1 hour and target resolution within 8 hours. Medium severity tickets target 24 hours and low severity tickets target 72 hours. These are synthetic demonstration targets, not official Ola commitments.",
+      "sources": [
+        "sla"
+      ],
+      "grounded": true
+    },
+    "How long are support tickets retained?": {
+      "answer": "For this demonstration, resolved tickets are retained for 180 days before archival review. Personal data must be minimized and access limited to authorized support staff. Deletion requests are referred to the privacy team for legal review. The assistant cannot delete ticket records directly.",
+      "sources": [
+        "retention"
+      ],
+      "grounded": true
+    },
+    "How to grow tomatoes on Mars?": {
+      "answer": "I don't know based on the available support policies.",
+      "sources": [],
+      "grounded": false
+    },
+    "Who won the ancient chess tournament on Jupiter?": {
+      "answer": "I don't know based on the available support policies.",
+      "sources": [],
+      "grounded": false
+    }
+  },
+  "ticket": {
+    "record_id": "OLA-0001",
+    "status": "In Progress",
+    "resolution_time_hours": 33.5,
+    "escalation_score": 0.72,
+    "recommend_escalation": true
+  },
+  "crew_policy": {
+    "trace_id": "cf9d21fd-49c9-4783-b92b-6ffc6ef8a7b3",
+    "response_format": "support_response",
+    "answer": "Critical incidents require acknowledgement within 15 minutes and a target resolution within 4 hours. High severity incidents require acknowledgement within 1 hour and target resolution within 8 hours. Medium severity tickets target 24 hours and low severity tickets target 72 hours. These are synthetic demonstration targets, not official Ola commitments.",
+    "sources": [
+      "sla"
+    ],
+    "grounded": true,
+    "reviewed": false,
+    "reason": ""
+  },
+  "crew_ticket": {
+    "trace_id": "89c5ccf8-bfed-4182-9110-aa6c02fb0a2c",
+    "response_format": "support_response",
+    "answer": "{\"record_id\": \"OLA-0001\", \"status\": \"In Progress\", \"resolution_time_hours\": 33.5, \"escalation_score\": 0.72, \"recommend_escalation\": true}",
+    "sources": [
+      "OLA-0001"
+    ],
+    "grounded": true,
+    "reviewed": false,
+    "reason": ""
+  },
+  "memory_same_session": [
+    "A rider may request review of a duplicate charge or an incorrect fare. The billing team verifies the transaction before any refund is approved. Approved refunds are returned through the original payment route where feasible. Support agents must not promise reimbursement before verification.",
+    "What is the refund policy?"
+  ],
+  "memory_fresh_session": "No previous question in this session.",
+  "masked_phone": "Call me at [PHONE_MASKED]",
+  "injection_rejected": "Prompt injection rejected",
+  "oversized_rejected": "Request token budget exceeded",
+  "review_approved": {
+    "approved": true,
+    "final_answer": "Verified policy",
+    "reason": "Exact match to grounded evidence"
+  },
+  "review_revised": {
+    "approved": false,
+    "final_answer": "Verified policy",
+    "reason": "Draft revised to remove unsupported wording"
+  },
+  "cache": {
+    "before": {
+      "grounded": 10,
+      "cache_hits": 2
+    },
+    "after": {
+      "grounded": 10,
+      "cache_hits": 3
+    }
+  }
+}

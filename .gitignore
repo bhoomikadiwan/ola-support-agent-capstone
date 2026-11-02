@@ -1,0 +1,11 @@
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.chroma/
+requests.jsonl
+.env
+.env.*
+!.env.example
+*.pyc
+.vscode/
