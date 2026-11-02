@@ -49,7 +49,9 @@ AutoGen Review (HTTP /ask)
 Structured API Response
 ```
 
-**Implementation distinction:** CrewAI agents execute through `Crew.kickoff()`, but the current final response is constructed using deterministic grounding and ticket-lookup logic. The offline mock model is not equivalent to a hosted generative language model.
+**Implementation distinction:** CrewAI agents execute through `Crew.kickoff()`, coordinating knowledge-base retrieval, ticket lookup, and response composition. The Composer agent's output is used to construct the draft response, which is subsequently checked against separately retrieved evidence by the AutoGen review workflow in the HTTP `/ask` endpoint.
+
+The project uses an offline mock language model rather than a hosted generative model. Its responses and review capabilities are therefore more limited than those of a production AI support system.
 
 The HTTP `/ask` route invokes AutoGen review. The WebSocket route provides session-based responses but does not currently use the same AutoGen review path.
 
@@ -120,7 +122,11 @@ Connect to:
 ws://127.0.0.1:8000/ws/session-A
 ```
 
-The WebSocket supports session-based interactions. Conversation history is stored in memory and resets when the server restarts.
+The WebSocket supports session-based conversations using LangChain's in-memory chat history. Each session maintains its own conversation history, preventing questions from different sessions from being mixed.
+
+The implementation supports contextual follow-up questions by passing the previous relevant user question alongside the current question to the CrewAI workflow. Users can also ask the agent to repeat their previous question.
+
+Conversation memory is stored in RAM and is not persistent. History is lost when the application restarts. Contextual follow-up detection uses predefined question patterns rather than general semantic understanding.
 
 ## 6. Testing
 
@@ -205,12 +211,15 @@ This is a working educational demonstration, not a production support platform.
 Important limitations include:
 
 - Offline mock model rather than a hosted generative model.
-- Deterministic final-answer construction after CrewAI execution.
 - Exact-match reviewer checks rather than independent semantic fact-checking.
 - In-memory conversation history without persistent storage.
 - Synthetic policies and customer records.
 - Small evaluation dataset and rule-based evaluation scores.
 - No verified production deployment or real customer integrations.
+- The WebSocket supports session memory but does not currently run the same independent AutoGen review workflow as the HTTP `/ask` endpoint.
+- Documents added through `/add-document` are indexed in ChromaDB but are not written back to `kb/policies.json`. The document registry is not fully persistent across application restarts.
+- The `/add-document` endpoint has no authentication or authorization and should only be used in a trusted local demonstration environment.
+- Prompt-injection detection and privacy masking are pattern-based. They do not provide comprehensive protection against adversarial inputs or all types of personal information.
 
 ## 12. Project Files
 
