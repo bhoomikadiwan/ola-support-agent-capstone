@@ -1,68 +1,238 @@
-# Ola (Business Operations / Customer Support) — Final Capstone
+# Ola Support Agent — CrewAI, AutoGen, RAG & FastAPI
 
-**Track completed:** Ola (Business Operations / Customer Support). Synthetic educational demonstration; not affiliated with Ola. **MOCK_LLM**, zero API keys. CrewAI telemetry disabled with `CREWAI_DISABLE_TELEMETRY=true` before crew kickoff. Do not submit as production-ready without additional hardening.
+An offline, multi-agent customer support capstone demonstrating knowledge-base retrieval, synthetic ticket lookup, session memory, response review, guardrails, evaluation, and API deployment.
 
-## Dataset design (reproducible)
+**GitHub:** https://github.com/bhoomikadiwan/ola-support-agent-capstone
 
-`dataset.py` uses seed **260313**, 60 records, category weights **[25,25,15,15,20]** in the order Billing, Technical Issue, Account Access, Product Defect, General Inquiry; status weights **[20,25,15,25,15]** in the order Open, In Progress, Escalated, Resolved, Closed. Synthetic disputed amount range **INR 50–2500**. Resolution time range **1–96 hours**, chosen to cover short routine requests and complex escalations. Escalated flag probability **0.19**. Counts: Billing 15, Technical Issue 18, Account Access 9, Product Defect 11, General Inquiry 7; statuses Open 11, In Progress 14, Escalated 7, Resolved 16, Closed 12; escalated percentage **18.33%**.
+**Disclaimer:** This is an educational project using synthetic data and policies. It is not affiliated with Ola and is not production-ready.
 
-## Installation (Python 3.11 recommended)
+## 1. Project Overview
 
-```bash
+The system demonstrates a customer support workflow using:
+
+- **CrewAI:** Role-separated agents for retrieval, ticket lookup, and response composition.
+- **AutoGen:** A two-agent review workflow using `RoundRobinGroupChat`.
+- **RAG:** SentenceTransformers embeddings and ChromaDB vector retrieval.
+- **LangChain:** Session-scoped conversation history.
+- **FastAPI:** HTTP and WebSocket interfaces.
+- **Guardrails:** Input checks, phone-number masking, request limits, and grounded-answer fallback.
+- **Evaluation:** Deterministic tests, retrieval comparisons, and saved demonstration results.
+
+The project uses an offline mock language model and does not require a paid model API key.
+
+## 2. Architecture
+
+```text
+Customer Query
+      |
+      v
+FastAPI /ask or WebSocket
+      |
+      v
+Input Validation and Guardrails
+      |
+      v
+CrewAI Workflow
+  |         |
+  v         v
+RAG       Ticket Lookup
+  |         |
+  +----+----+
+       |
+       v
+Grounded Response Construction
+       |
+       v
+AutoGen Review (HTTP /ask)
+       |
+       v
+Structured API Response
+```
+
+**Implementation distinction:** CrewAI agents execute through `Crew.kickoff()`, but the current final response is constructed using deterministic grounding and ticket-lookup logic. The offline mock model is not equivalent to a hosted generative language model.
+
+The HTTP `/ask` route invokes AutoGen review. The WebSocket route provides session-based responses but does not currently use the same AutoGen review path.
+
+## 3. Dataset and Knowledge Base
+
+`dataset.py` generates 60 reproducible synthetic customer support records using seed `260313`.
+
+The dataset covers billing, technical issues, account access, product defects, and general inquiries.
+
+`kb/policies.json` contains 12 synthetic support policies.
+
+These records and policies are demonstration data, not official Ola customer records or service commitments.
+
+## 4. Installation
+
+**Recommended environment:** Python 3.11.
+
+```powershell
 python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+Generate the synthetic dataset and initialize retrieval:
+
+```powershell
 python dataset.py
 python rag.py
-python evaluate.py
-pytest -q
+```
+
+The first SentenceTransformers model download requires internet access. Subsequent local inference can run without a hosted model API.
+
+## 5. Run the Application
+
+Start the FastAPI server:
+
+```powershell
+python -m uvicorn api:app --host 127.0.0.1 --port 8000
+```
+
+Open the interactive API documentation:
+
+http://127.0.0.1:8000/docs
+
+### HTTP endpoints
+
+**POST `/ask`**
+
+Example request:
+
+```json
+{
+  "query": "What is the SLA for critical tickets?"
+}
+```
+
+The response includes an answer, source references, grounding status, review information, and a trace identifier.
+
+**POST `/add-document`**
+
+Adds a new knowledge-base document to the local retrieval collections.
+
+### WebSocket
+
+Connect to:
+
+```text
+ws://127.0.0.1:8000/ws/session-A
+```
+
+The WebSocket supports session-based interactions. Conversation history is stored in memory and resets when the server restarts.
+
+## 6. Testing
+
+Run the automated tests:
+
+```powershell
+python -m pytest -v
+```
+
+**Last verified result: 6 tests passed.**
+
+The tests cover dataset behavior, phone masking, prompt-injection checks, request budgeting, ticket lookup, and deterministic review.
+
+Run the demonstration:
+
+```powershell
 python demo.py
-uvicorn api:app --reload
 ```
 
-The first local SentenceTransformers model download requires internet access; **inference and mock transcripts use no API keys and no model API calls**. For strict offline runtime, pre-download and cache the model before disconnecting. Visit `http://127.0.0.1:8000/docs` to test `POST /ask` and `POST /add-document`. Connect WebSocket `ws://127.0.0.1:8000/ws/session-A`.
+Run the evaluation:
 
-## Architecture and scoring evidence
-
-- `dataset.py`: deterministic dataset, counts and validation.
-- `kb/policies.json`: 12 original synthetic policies (not official Ola policies).
-- `rag.py`: fixed 240-character chunks with 40-character overlap and sentence pairs; local MiniLM embeddings, two Chroma cosine collections, `upsert`, retrieval, empirical threshold calibration, grounded answers and normalized-query cache.
-- `evaluate.py`: 15 test cases, per-query four mock-judge scores, averages and 5-query precision/recall arithmetic for each collection. **These are deterministic proxy judgments, not independent LLM judgments.**
-- `core.py`: schema, phone masking, injection detection, request budget, ticket score.
-- `crew.py`: three role-separated agents, two tools and `Crew.kickoff()` with custom `BaseLLM`.
-- `memory.py`: session-isolated LangChain message history and multi-turn demo.
-- `review.py`: AutoGen `RoundRobinGroupChat` factory and deterministic offline review verdict demonstration.
-- `api.py`: two HTTP endpoints, WebSocket disconnect handling, JSONL trace logging with masked phone values.
-- `demo.py`: reproducible demonstration transcript, including guardrail rejection, cache hit and review revision.
-
-## Threshold and retrieval comparison
-
-**Do not invent measurements.** Run `python evaluate.py` and paste actual `transcripts/evaluation.json` calibration scores and selected threshold here before submission. Threshold is computed as the midpoint between the lowest in-scope and highest out-of-scope top-1 cosine similarity; calibration fails loudly if the sets overlap. Report the fixed and sentence strategy precision and recall from that same file, then recommend the strategy supported by measured values. The demo currently defaults to sentence chunks.
-
-## Escalation policy
-
-`escalation_score = 0.65 * int(escalated) + 0.35 * days_since_created / 30`. Recommend escalation when score **>0.55**, so all already-escalated tickets trigger review while non-escalated aging tickets do not cross the threshold. This is a conservative synthetic routing rule, not an empirically optimized percentile. For grading, add the actual age distribution and justification.
-
-## Governance
-
-**Application:** Medium risk, because customer support responses can affect service outcomes but the demo cannot process payments or issue credits. Only the Lookup Agent receives the ticket lookup tool; the Retrieval and Composer agents have no access. **Runtime:** maximum 500 input words (a simple conservative proxy for a token budget), with explicit rejection. **Privacy:** Indian-format phone numbers are masked before model input and JSONL logging. **Human oversight:** refunds, safety escalations and credits require staff approval. **Data:** synthetic only. **Review:** policy compliance and final editing before customer release should be enforced; the included deterministic review demonstration is not yet integrated into the API response path.
-
-## Important remaining validation before claiming full marks
-
-This starter is intentionally transparent about limitations: AutoGen team factory is provided but the real AutoGen two-agent round robin is not executed by the default mock transcript; the API does not yet pass its response through AutoGen; the custom CrewAI mock adapter may require adjustment for the installed CrewAI release; the judge uses deterministic heuristics rather than a prompt-driven mock judge; and the runtime budget uses words rather than exact tokenizer counts. Fix these and run the full end-to-end acceptance tests before claiming all 100 marks. Do not present unexecuted code as validated evidence.
-
-## GitHub submission
-
-Create one **public** GitHub repository, then run:
-
-```bash
-git init
-git add .
-git commit -m "Initial Ola support capstone implementation"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/ola-support-capstone.git
-git push -u origin main
+```powershell
+python evaluate.py
 ```
 
-Submit only the public repository URL. Do not commit `.env`, local cache, raw logs, or personal data.
+Generated evidence is saved in the `transcripts/` directory.
+
+## 7. RAG Evaluation
+
+The project compares fixed-size and sentence-based chunking strategies.
+
+| Metric | Fixed chunks | Sentence chunks |
+|---|---:|---:|
+| Average precision at k=3 | 36.7% | 40.0% |
+| Average recall | 100% | 100% |
+
+The empirical similarity threshold is **0.38103**.
+
+These results are based on a small synthetic evaluation set, with retrieval comparison across five queries. They should not be interpreted as general production performance.
+
+Sentence-based retrieval is used as the default strategy.
+
+## 8. Response Evaluation
+
+The evaluation includes 15 queries, with deterministic proxy scoring for accuracy, grounding, completeness, and safety.
+
+The recorded average scores were 1.0 for each dimension.
+
+These scores reflect the project's rule-based evaluation methodology. They are not independent LLM judgments or evidence of perfect real-world accuracy.
+
+## 9. AutoGen Review
+
+The project includes two review implementations:
+
+- `review.py` provides a deterministic `mock_review()` function used by tests and demonstrations.
+- `offline_autogen.py` provides the AutoGen two-agent review workflow used by the HTTP API.
+
+The AutoGen workflow uses a policy reviewer and final editor to produce a structured verdict.
+
+The current offline review relies on exact-match evidence checks rather than independent semantic verification.
+
+## 10. Safety and Governance
+
+The project includes:
+
+- Input checks for prompt-injection patterns.
+- Indian-format phone-number masking.
+- A conservative request-size limit.
+- An explicit fallback for unsupported policy questions.
+- Source references and grounding indicators.
+- Synthetic ticket data.
+- Review before HTTP response delivery.
+
+The application cannot issue real refunds, payments, or account changes.
+
+For production use, additional authentication, authorization, privacy controls, monitoring, semantic validation, and human approval workflows would be required.
+
+## 11. Limitations
+
+This is a working educational demonstration, not a production support platform.
+
+Important limitations include:
+
+- Offline mock model rather than a hosted generative model.
+- Deterministic final-answer construction after CrewAI execution.
+- Exact-match reviewer checks rather than independent semantic fact-checking.
+- In-memory conversation history without persistent storage.
+- Synthetic policies and customer records.
+- Small evaluation dataset and rule-based evaluation scores.
+- No verified production deployment or real customer integrations.
+
+## 12. Project Files
+
+| File | Purpose |
+|---|---|
+| `api.py` | FastAPI HTTP and WebSocket application |
+| `crew.py` | CrewAI agent orchestration |
+| `offline_autogen.py` | AutoGen review workflow |
+| `review.py` | Deterministic reviewer and AutoGen team factory |
+| `rag.py` | Embeddings, retrieval, and grounding |
+| `dataset.py` | Synthetic dataset generation |
+| `core.py` | Schemas, guardrails, and ticket logic |
+| `memory.py` | Session-scoped conversation history |
+| `evaluate.py` | Evaluation pipeline |
+| `demo.py` | Reproducible demonstration |
+| `tests/` | Automated tests |
+| `transcripts/` | Saved demonstration and evaluation evidence |
+
+## 13. Submission
+
+**Repository:** https://github.com/bhoomikadiwan/ola-support-agent-capstone
+
+**Branch:** `main`
+
+The repository contains the implementation, setup instructions, tests, synthetic knowledge base, and evaluation evidence.

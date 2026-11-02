@@ -9,3 +9,5 @@ requests.jsonl
 !.env.example
 *.pyc
 .vscode/
+
+README_backup.md
